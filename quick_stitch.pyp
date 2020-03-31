@@ -97,8 +97,8 @@ class QuickStitch(c4d.plugins.ObjectData):
             if data["id"][0].id != c4d.QUICK_STITCH_BUTTON:
                 return True
 
-            self.obj = self.this[c4d.QUICK_STITCH_SOURCE]
             if (not self.obj) or (not self.obj.CheckType(c4d.Opolygon)):
+                print "obj is None"
                 return True
 
             if self.spline is not None:
@@ -120,6 +120,8 @@ class QuickStitch(c4d.plugins.ObjectData):
         return True        
 
     def GetVirtualObjects(self, op, hierarchyhelp):
+        self.obj = op[c4d.QUICK_STITCH_SOURCE]
+
         # property
         count = op[c4d.QUICK_STITCH_COUNT]
         width = op[c4d.QUICK_STITCH_WIDTH]
