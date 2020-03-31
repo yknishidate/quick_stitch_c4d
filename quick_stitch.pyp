@@ -40,7 +40,6 @@ def copy_coordnates(from_obj, to_obj):
 
 class QuickStitch(c4d.plugins.ObjectData):
     def __init__(self, *args):
-        # super(QuickStitch, self).__init__(*args)
         self.SetOptimizeCache(True)
 
     def Init(self, op):
@@ -94,7 +93,6 @@ class QuickStitch(c4d.plugins.ObjectData):
 
     def set_spline(self, spline):
         self.spline = spline.GetClone()
-        # self.spline[c4d.SPLINEOBJECT_INTERPOLATION] = 2 # uniform
         self.spline.InsertUnder(self.null)
         self.cloner[c4d.MG_OBJECT_LINK] = self.spline
 
@@ -151,7 +149,6 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.cloner[c4d.MG_SPLINE_MODE] = 0                          # count
         self.cloner[c4d.MG_SPLINE_COUNT] = count
         self.cloner[c4d.ID_MG_TRANSFORM_POSITION,c4d.VECTOR_X] = -offset
-        # self.cloner[c4d.ID_MG_TRANSFORM_POSITION,c4d.VECTOR_Y] = offset
         self.cloner[c4d.ID_MG_TRANSFORM_ROTATE,c4d.VECTOR_X] = rotation_h
         self.cloner[c4d.ID_MG_TRANSFORM_ROTATE,c4d.VECTOR_Y] = rotation_p
         self.cloner[c4d.ID_MG_TRANSFORM_ROTATE,c4d.VECTOR_Z] = rotation_b
@@ -159,27 +156,8 @@ class QuickStitch(c4d.plugins.ObjectData):
         return self.null
 
     def CopyTo(self, dest, snode, dnode, flags, trn):
-        print "=====CopyTo()====="
-        print "dest.spline: ", dest.spline
-        print "dest.obj   : ", dest.obj
-        print "dest.null  : ", dest.null
         if self.spline:
             dest.set_spline(self.spline)
-            # dspline = self.spline.GetClone()
-            # dspline.InsertUnder(dnode)
-            # dest.Message(dnode, c4d.MSG_DESCRIPTION_COMMAND, None)
-        
-        # print "self :", self
-        # print "dest :", dest
-        # print "snode:", snode
-        # print "dnode:", dnode
-        # print "flags:", flags
-        # print "trn  :", trn
-        # if self.spline:
-            # dest.spline = self.spline
-            # dest.cloner[c4d.MG_OBJECT_LINK] = self.spline
-            # print "copied"
-            # self.spline.GetClone().InsertUnder(dest.null)
         return True
 
 
