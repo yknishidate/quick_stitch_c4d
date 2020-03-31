@@ -8,6 +8,7 @@ CLONER_OBJECT = 1018544
 MOSPLINE_OBJECT = 440000054
 
 
+
 def create_spline_from_splinedata(spData, arc, width, height):
         if not spData:
             return 
@@ -50,6 +51,16 @@ class QuickStitch(c4d.plugins.ObjectData):
         op[c4d.QUICK_STITCH_HEIGHT] = 5.0
         op[c4d.QUICK_STITCH_THICKNESS] = 2.0
 
+        # --------------------------------------------------
+        spd = c4d.SplineData()
+        spd.MakePointBuffer(3)
+        spd.SetKnot(0, c4d.Vector(0.0, 0.0, 0.0), 65536, vTangentRight=c4d.Vector(0.0, 0.5, 0.0), interpol=0)
+        spd.SetKnot(1, c4d.Vector(0.5, 1.0, 0.0), 131072, vTangentLeft=c4d.Vector(-0.25, 0.0, 0.0), vTangentRight=c4d.Vector(0.25, 0.0, 0.0), interpol=0)
+        spd.SetKnot(0, c4d.Vector(1.0, 0.0, 0.0), 196608, vTangentLeft=c4d.Vector(0.0, 0.5, 0.0), interpol=0)
+        op[c4d.QUICK_STITCH_SHAPE] = spd
+        # --------------------------------------------------
+
+
         self.this = op
 
         # create
@@ -69,6 +80,8 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.cloner.InsertUnder(self.null)
 
         print "Init()"
+
+        c4d.EventAdd()
 
         return True
 
@@ -112,28 +125,6 @@ class QuickStitch(c4d.plugins.ObjectData):
         # shape
         self.shape = op[c4d.QUICK_STITCH_SHAPE]
         create_spline_from_splinedata(self.shape, self.arc, width, height)
-        # if not self.shape:
-        #     return 
-        # knots = self.shape.GetKnots()
-        # cnt = len(knots)
-        # self.arc.ResizeObject(cnt)
-        # for i in xrange(cnt):
-        #     pos = knots[i]["vPos"]
-        #     tan_r = knots[i]["vTangentRight"]
-        #     tan_l = knots[i]["vTangentLeft"]
-
-        #     pos[0] *= width
-        #     pos[1] *= height
-        #     tan_r[0] *= width
-        #     tan_r[1] *= height
-        #     tan_l[0] *= width
-        #     tan_l[1] *= height
-
-        #     self.arc.SetPoint(i, pos)
-        #     self.arc.SetTangent(i, tan_l, tan_r)
-        # self.arc[c4d.SPLINEOBJECT_ANGLE] = c4d.utils.DegToRad(10)
-        # self.arc[c4d.ID_BASEOBJECT_REL_ROTATION,c4d.VECTOR_X] = c4d.utils.DegToRad(-90)
-        # self.arc[c4d.ID_BASEOBJECT_REL_ROTATION,c4d.VECTOR_Y] = c4d.utils.DegToRad(90)
 
         # cloner
         self.cloner[c4d.ID_MG_MOTIONGENERATOR_MODE] = 0              # object
