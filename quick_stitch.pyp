@@ -19,7 +19,7 @@ def create_spline_from_splinedata(spData, arc, width, height):
             tan_r = knots[i]["vTangentRight"]
             tan_l = knots[i]["vTangentLeft"]
 
-            pos[0] *= width
+            pos[0] = (pos[0] - 0.5) * width
             pos[1] *= height
             tan_r[0] *= width
             tan_r[1] *= height
@@ -84,16 +84,12 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.sweep.InsertUnder(self.cloner)
         self.cloner.InsertUnder(self.null)
 
-        print "Init()"
-
         return True
 
     def Message(self, node, type, data):
         if type == c4d.MSG_DESCRIPTION_COMMAND:
             if data["id"][0].id != c4d.QUICK_STITCH_BUTTON:
                 return True
-
-            print "Message()"
 
             self.obj = self.this[c4d.QUICK_STITCH_SOURCE]
             if (not self.obj) or (not self.obj.CheckType(c4d.Opolygon)):
@@ -115,7 +111,6 @@ class QuickStitch(c4d.plugins.ObjectData):
         return True        
 
     def GetVirtualObjects(self, op, hierarchyhelp):
-        print "GetVirtualObjects()"
         # property
         count = op[c4d.QUICK_STITCH_COUNT]
         width = op[c4d.QUICK_STITCH_WIDTH]
@@ -137,6 +132,7 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.cloner[c4d.MG_SPLINE_MODE] = 0                          # count
         self.cloner[c4d.MG_SPLINE_COUNT] = count
         self.cloner[c4d.ID_MG_TRANSFORM_POSITION,c4d.VECTOR_X] = offset
+        self.cloner[c4d.ID_MG_TRANSFORM_POSITION,c4d.VECTOR_Y] = offset
         self.cloner[c4d.ID_MG_TRANSFORM_ROTATE,c4d.VECTOR_Z] = rotation
 
         return self.null
