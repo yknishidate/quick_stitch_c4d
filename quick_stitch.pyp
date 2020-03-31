@@ -48,7 +48,8 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.InitAttr(op, float, c4d.QUICK_STITCH_HEIGHT)
         self.InitAttr(op, float, c4d.QUICK_STITCH_THICKNESS)
         self.InitAttr(op, float, c4d.QUICK_STITCH_OFFSET)
-        self.InitAttr(op, float, c4d.QUICK_STITCH_ROTATION)
+        self.InitAttr(op, float, c4d.QUICK_STITCH_ROTATION_H)
+        self.InitAttr(op, float, c4d.QUICK_STITCH_ROTATION_B)
         self.InitAttr(op, float, c4d.QUICK_STITCH_ROTATION_P)
 
         op[c4d.QUICK_STITCH_COUNT] = 100
@@ -56,7 +57,8 @@ class QuickStitch(c4d.plugins.ObjectData):
         op[c4d.QUICK_STITCH_HEIGHT] = 3.0
         op[c4d.QUICK_STITCH_THICKNESS] = 0.5
         op[c4d.QUICK_STITCH_OFFSET] = -1.0
-        op[c4d.QUICK_STITCH_ROTATION] = 0.0
+        op[c4d.QUICK_STITCH_ROTATION_H] = 0.0
+        op[c4d.QUICK_STITCH_ROTATION_B] = 0.0
         op[c4d.QUICK_STITCH_ROTATION_P] = 0.0
 
         # init spline data
@@ -122,7 +124,8 @@ class QuickStitch(c4d.plugins.ObjectData):
         height = op[c4d.QUICK_STITCH_HEIGHT]
         thickness = op[c4d.QUICK_STITCH_THICKNESS]
         offset = op[c4d.QUICK_STITCH_OFFSET]
-        rotation_b = op[c4d.QUICK_STITCH_ROTATION]
+        rotation_h = op[c4d.QUICK_STITCH_ROTATION_H]
+        rotation_b = op[c4d.QUICK_STITCH_ROTATION_B]
         rotation_p = op[c4d.QUICK_STITCH_ROTATION_P]
 
         # circle
@@ -139,10 +142,14 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.cloner[c4d.MG_SPLINE_COUNT] = count
         self.cloner[c4d.ID_MG_TRANSFORM_POSITION,c4d.VECTOR_X] = -offset
         # self.cloner[c4d.ID_MG_TRANSFORM_POSITION,c4d.VECTOR_Y] = offset
+        self.cloner[c4d.ID_MG_TRANSFORM_ROTATE,c4d.VECTOR_X] = rotation_h
         self.cloner[c4d.ID_MG_TRANSFORM_ROTATE,c4d.VECTOR_Y] = rotation_p
         self.cloner[c4d.ID_MG_TRANSFORM_ROTATE,c4d.VECTOR_Z] = rotation_b
 
         return self.null
+
+    def CopyTo(self, dest, snode, dnode, flags, trn):
+        
 
 if __name__ == "__main__":
     # Retrieves the icon path
