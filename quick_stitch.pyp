@@ -75,6 +75,8 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.null = c4d.BaseObject(c4d.Onull)
         self.sweep = c4d.BaseObject(c4d.Osweep)
         self.sweep.SetPhong(True, True, c4d.utils.DegToRad(50))
+        # self.sweep[c4d.ID_BASEOBJECT_REL_ROTATION,c4d.VECTOR_X] = c4d.utils.DegToRad(-90)
+        # self.sweep[c4d.ID_BASEOBJECT_REL_ROTATION,c4d.VECTOR_Y] = c4d.utils.DegToRad(90)
         self.circle = c4d.BaseObject(c4d.Osplinecircle)
         self.cloner  = c4d.BaseObject(CLONER_OBJECT)
 
@@ -94,6 +96,9 @@ class QuickStitch(c4d.plugins.ObjectData):
             self.obj = self.this[c4d.QUICK_STITCH_SOURCE]
             if (not self.obj) or (not self.obj.CheckType(c4d.Opolygon)):
                 return True
+
+            if self.spline is not None:
+                self.spline.Remove()
 
             source = self.obj.GetClone()
             selected = source.GetEdgeS()
@@ -131,8 +136,8 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.cloner[c4d.ID_MG_MOTIONGENERATOR_MODE] = 0              # object
         self.cloner[c4d.MG_SPLINE_MODE] = 0                          # count
         self.cloner[c4d.MG_SPLINE_COUNT] = count
-        self.cloner[c4d.ID_MG_TRANSFORM_POSITION,c4d.VECTOR_X] = offset
-        self.cloner[c4d.ID_MG_TRANSFORM_POSITION,c4d.VECTOR_Y] = offset
+        self.cloner[c4d.ID_MG_TRANSFORM_POSITION,c4d.VECTOR_X] = -offset
+        # self.cloner[c4d.ID_MG_TRANSFORM_POSITION,c4d.VECTOR_Y] = offset
         self.cloner[c4d.ID_MG_TRANSFORM_ROTATE,c4d.VECTOR_Z] = rotation
 
         return self.null
