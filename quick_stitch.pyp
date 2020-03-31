@@ -8,7 +8,6 @@ CLONER_OBJECT = 1018544
 MOSPLINE_OBJECT = 440000054
 
 
-
 def create_spline_from_splinedata(spData, arc, width, height):
         if not spData:
             return 
@@ -33,6 +32,9 @@ def create_spline_from_splinedata(spData, arc, width, height):
         arc[c4d.ID_BASEOBJECT_REL_ROTATION,c4d.VECTOR_X] = c4d.utils.DegToRad(-90)
         arc[c4d.ID_BASEOBJECT_REL_ROTATION,c4d.VECTOR_Y] = c4d.utils.DegToRad(90)
         
+
+def copy_coordnates(from_obj, to_obj):
+    to_obj.SetMg(from_obj.GetMg())
 
 class QuickStitch(c4d.plugins.ObjectData):
     def __init__(self, *args):
@@ -99,6 +101,8 @@ class QuickStitch(c4d.plugins.ObjectData):
                 return True
             if c4d.utils.SendModelingCommand(c4d.MCOMMAND_EDGE_TO_SPLINE, [source]):
                 self.spline = source.GetDown().GetClone()
+                self.spline[c4d.SPLINEOBJECT_INTERPOLATION] = 2 # uniform
+                copy_coordnates(self.obj, self.spline)
                 self.spline.InsertUnder(self.null)
                 source.GetDown().Remove()
                 self.cloner[c4d.MG_OBJECT_LINK] = self.spline
