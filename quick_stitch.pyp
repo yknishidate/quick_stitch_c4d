@@ -2,6 +2,7 @@
 import os
 import sys
 import c4d
+import copy
 
 PLUGIN_ID = 1054816
 CLONER_OBJECT = 1018544
@@ -43,6 +44,7 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.SetOptimizeCache(True)
 
     def Init(self, op):
+        # print "Init()"
         self.InitAttr(op, int,   c4d.QUICK_STITCH_COUNT)
         self.InitAttr(op, float, c4d.QUICK_STITCH_WIDTH)
         self.InitAttr(op, float, c4d.QUICK_STITCH_HEIGHT)
@@ -149,12 +151,25 @@ class QuickStitch(c4d.plugins.ObjectData):
         return self.null
 
     def CopyTo(self, dest, snode, dnode, flags, trn):
-        
+        # print "=====CopyTo()====="
+        # print "self :", self
+        # print "dest :", dest
+        # print "snode:", snode
+        # print "dnode:", dnode
+        # print "flags:", flags
+        # print "trn  :", trn
+        # if self.obj:
+        #     dest.obj = self.obj.GetClone()
+        # if self.spline:
+            # dest.spline = self.spline.GetClone()
+            # self.spline.GetClone().InsertUnder(dest.null)
+        return True
+
 
 if __name__ == "__main__":
     # Retrieves the icon path
     directory, _ = os.path.split(__file__)
-    fn = os.path.join(directory, "res", "opyspherifymodifier.tif")
+    fn = os.path.join(directory, "res", "qiuckstitch.tif")
 
     # Creates a BaseBitmap
     bmp = c4d.bitmaps.BaseBitmap()
