@@ -1,0 +1,15 @@
+STRINGTABLE quick_stitch
+{
+    quick_stitch "Quick Stitch";
+
+    QUICK_STITCH_SOURCE     "Object";
+    QUICK_STITCH_STEP       "Step";
+    QUICK_STITCH_COUNT      "Count";
+    QUICK_STITCH_WIDTH      "Width";
+    QUICK_STITCH_HEIGHT     "Height";
+    QUICK_STITCH_THICKNESS  "Thickness";
+    QUICK_STITCH_OFFSET     "Offset";
+    QUICK_STITCH_SHAPE      "Shape";
+    QUICK_STITCH_BUTTON     "Make Stitch";
+
+}
