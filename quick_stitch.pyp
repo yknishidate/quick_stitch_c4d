@@ -23,6 +23,26 @@ class QuickStitch(c4d.plugins.ObjectData):
         op[c4d.QUICK_STITCH_HEIGHT] = 5.0
         op[c4d.QUICK_STITCH_THICKNESS] = 2.0
 
+        self.this = op
+
+        # create
+        self.obj = None
+        self.shape = None
+        self.spline = None
+        self.arc = c4d.SplineObject(1, c4d.SPLINETYPE_BEZIER)
+        self.null = c4d.BaseObject(c4d.Onull)
+        self.sweep = c4d.BaseObject(c4d.Osweep)
+        self.circle = c4d.BaseObject(c4d.Osplinecircle)
+        self.cloner  = c4d.BaseObject(CLONER_OBJECT)
+
+        # insert
+        self.arc.InsertUnder(self.sweep)
+        self.circle.InsertUnder(self.sweep)
+        self.sweep.InsertUnder(self.cloner)
+        self.cloner.InsertUnder(self.null)
+
+        print "init"
+
         return True
 
 
