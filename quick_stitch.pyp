@@ -51,15 +51,13 @@ class QuickStitch(c4d.plugins.ObjectData):
         op[c4d.QUICK_STITCH_HEIGHT] = 5.0
         op[c4d.QUICK_STITCH_THICKNESS] = 2.0
 
-        # --------------------------------------------------
+        # init spline data
         spd = c4d.SplineData()
         spd.MakePointBuffer(3)
         spd.SetKnot(0, c4d.Vector(0.0, 0.0, 0.0), 65536, vTangentRight=c4d.Vector(0.0, 0.5, 0.0), interpol=0)
         spd.SetKnot(1, c4d.Vector(0.5, 1.0, 0.0), 131072, vTangentLeft=c4d.Vector(-0.25, 0.0, 0.0), vTangentRight=c4d.Vector(0.25, 0.0, 0.0), interpol=0)
         spd.SetKnot(2, c4d.Vector(1.0, 0.0, 0.0), 196608, vTangentLeft=c4d.Vector(0.0, 0.5, 0.0), interpol=0)
         op[c4d.QUICK_STITCH_SHAPE] = spd
-        # --------------------------------------------------
-
 
         self.this = op
 
