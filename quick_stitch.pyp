@@ -31,7 +31,7 @@ def create_spline_from_splinedata(spData, arc, width, height):
         arc[c4d.SPLINEOBJECT_ANGLE] = c4d.utils.DegToRad(10)
         arc[c4d.ID_BASEOBJECT_REL_ROTATION,c4d.VECTOR_X] = c4d.utils.DegToRad(-90)
         arc[c4d.ID_BASEOBJECT_REL_ROTATION,c4d.VECTOR_Y] = c4d.utils.DegToRad(90)
-        arc[c4d.SPLINEOBJECT_ANGLE] = c4d.utils.DegToRad(30)
+        arc[c4d.SPLINEOBJECT_ANGLE] = c4d.utils.DegToRad(15)
         
 
 def copy_coordnates(from_obj, to_obj):
@@ -49,13 +49,15 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.InitAttr(op, float, c4d.QUICK_STITCH_THICKNESS)
         self.InitAttr(op, float, c4d.QUICK_STITCH_OFFSET)
         self.InitAttr(op, float, c4d.QUICK_STITCH_ROTATION)
+        self.InitAttr(op, float, c4d.QUICK_STITCH_ROTATION_P)
 
         op[c4d.QUICK_STITCH_COUNT] = 100
         op[c4d.QUICK_STITCH_WIDTH] = 6.0
         op[c4d.QUICK_STITCH_HEIGHT] = 3.0
         op[c4d.QUICK_STITCH_THICKNESS] = 0.5
-        op[c4d.QUICK_STITCH_OFFSET] = 1.0
+        op[c4d.QUICK_STITCH_OFFSET] = -1.0
         op[c4d.QUICK_STITCH_ROTATION] = 0.0
+        op[c4d.QUICK_STITCH_ROTATION_P] = 0.0
 
         # init spline data
         spd = c4d.SplineData()
@@ -75,8 +77,6 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.null = c4d.BaseObject(c4d.Onull)
         self.sweep = c4d.BaseObject(c4d.Osweep)
         self.sweep.SetPhong(True, True, c4d.utils.DegToRad(50))
-        # self.sweep[c4d.ID_BASEOBJECT_REL_ROTATION,c4d.VECTOR_X] = c4d.utils.DegToRad(-90)
-        # self.sweep[c4d.ID_BASEOBJECT_REL_ROTATION,c4d.VECTOR_Y] = c4d.utils.DegToRad(90)
         self.circle = c4d.BaseObject(c4d.Osplinecircle)
         self.cloner  = c4d.BaseObject(CLONER_OBJECT)
 
@@ -122,7 +122,8 @@ class QuickStitch(c4d.plugins.ObjectData):
         height = op[c4d.QUICK_STITCH_HEIGHT]
         thickness = op[c4d.QUICK_STITCH_THICKNESS]
         offset = op[c4d.QUICK_STITCH_OFFSET]
-        rotation = op[c4d.QUICK_STITCH_ROTATION]
+        rotation_b = op[c4d.QUICK_STITCH_ROTATION]
+        rotation_p = op[c4d.QUICK_STITCH_ROTATION_P]
 
         # circle
         self.circle[c4d.PRIM_CIRCLE_RADIUS] = thickness
@@ -138,7 +139,8 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.cloner[c4d.MG_SPLINE_COUNT] = count
         self.cloner[c4d.ID_MG_TRANSFORM_POSITION,c4d.VECTOR_X] = -offset
         # self.cloner[c4d.ID_MG_TRANSFORM_POSITION,c4d.VECTOR_Y] = offset
-        self.cloner[c4d.ID_MG_TRANSFORM_ROTATE,c4d.VECTOR_Z] = rotation
+        self.cloner[c4d.ID_MG_TRANSFORM_ROTATE,c4d.VECTOR_Y] = rotation_p
+        self.cloner[c4d.ID_MG_TRANSFORM_ROTATE,c4d.VECTOR_Z] = rotation_b
 
         return self.null
 
