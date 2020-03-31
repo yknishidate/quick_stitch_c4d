@@ -11,5 +11,5 @@ STRINGTABLE quick_stitch
     QUICK_STITCH_OFFSET     "Offset";
     QUICK_STITCH_SHAPE      "Shape";
     QUICK_STITCH_BUTTON     "Make Stitch";
-
+    QUICK_STITCH_ROTATION   "Rotation";
 }
