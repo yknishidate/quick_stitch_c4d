@@ -9,6 +9,7 @@ MOSPLINE_OBJECT = 440000054
 
 class QuickStitch(c4d.plugins.ObjectData):
     def __init__(self, *args):
+        super(QuickStitch, self).__init__(*args)
         self.SetOptimizeCache(True)
 
     def Init(self, op):
@@ -41,11 +42,80 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.sweep.InsertUnder(self.cloner)
         self.cloner.InsertUnder(self.null)
 
-        print "init"
+        print "Init()"
 
         return True
 
+    def Message(self, node, type, data):
+        if type == c4d.MSG_DESCRIPTION_COMMAND:
+            if data["id"][0].id != c4d.QUICK_STITCH_BUTTON:
+                return True
 
+            print "Message()"
+
+            self.obj = self.this[c4d.QUICK_STITCH_SOURCE]
+            if (not self.obj) or (not self.obj.CheckType(c4d.Opolygon)):
+                return True
+
+            source = self.obj.GetClone()
+            selected = source.GetEdgeS()
+            count = selected.GetCount()
+            if count < 1:
+                return True
+            if c4d.utils.SendModelingCommand(c4d.MCOMMAND_EDGE_TO_SPLINE, [source]):
+                self.spline = source.GetDown().GetClone()
+                self.spline.InsertUnder(self.null)
+                source.GetDown().Remove()
+                self.cloner[c4d.MG_OBJECT_LINK] = self.spline
+
+        return True
+
+    def GetVirtualObjects(self, op, hierarchyhelp):
+        print "GetVirtualObjects()"
+        # property
+        count = op[c4d.QUICK_STITCH_COUNT]
+        width = op[c4d.QUICK_STITCH_WIDTH]
+        height = op[c4d.QUICK_STITCH_HEIGHT]
+        thickness = op[c4d.QUICK_STITCH_THICKNESS]
+        offset = op[c4d.QUICK_STITCH_OFFSET]
+
+        # circle
+        self.circle[c4d.PRIM_CIRCLE_RADIUS] = thickness
+        self.circle[c4d.SPLINEOBJECT_SUB] = 2
+
+        # shape
+        self.shape = op[c4d.QUICK_STITCH_SHAPE]
+        if not self.shape:
+            return 
+        knots = self.shape.GetKnots()
+        cnt = len(knots)
+        self.arc.ResizeObject(cnt)
+        for i in xrange(cnt):
+            pos = knots[i]["vPos"]
+            tan_r = knots[i]["vTangentRight"]
+            tan_l = knots[i]["vTangentLeft"]
+
+            pos[0] *= width
+            pos[1] *= height
+            tan_r[0] *= width
+            tan_r[1] *= height
+            tan_l[0] *= width
+            tan_l[1] *= height
+
+            self.arc.SetPoint(i, pos)
+            self.arc.SetTangent(i, tan_l, tan_r)
+        self.arc[c4d.SPLINEOBJECT_ANGLE] = c4d.utils.DegToRad(10)
+        self.arc[c4d.ID_BASEOBJECT_REL_ROTATION,c4d.VECTOR_X] = c4d.utils.DegToRad(-90)
+        self.arc[c4d.ID_BASEOBJECT_REL_ROTATION,c4d.VECTOR_Y] = c4d.utils.DegToRad(90)
+
+        # cloner
+        self.cloner[c4d.ID_MG_MOTIONGENERATOR_MODE] = 0              # object
+        self.cloner[c4d.MG_SPLINE_MODE] = 0                          # count
+        self.cloner[c4d.MG_SPLINE_COUNT] = count
+        self.cloner[c4d.ID_MG_TRANSFORM_POSITION,c4d.VECTOR_X] = offset
+
+
+        return self.null
 
 if __name__ == "__main__":
     # Retrieves the icon path
@@ -67,4 +137,4 @@ if __name__ == "__main__":
                                  g=QuickStitch,
                                  description="quick_stitch",
                                  icon=bmp,
-                                 info=c4d.OBJECT_POLYGONOBJECT)
+                                 info=c4d.OBJECT_GENERATOR)
