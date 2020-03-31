@@ -92,6 +92,12 @@ class QuickStitch(c4d.plugins.ObjectData):
 
         return True
 
+    def set_spline(self, spline):
+        self.spline = spline.GetClone()
+        # self.spline[c4d.SPLINEOBJECT_INTERPOLATION] = 2 # uniform
+        self.spline.InsertUnder(self.null)
+        self.cloner[c4d.MG_OBJECT_LINK] = self.spline
+
     def Message(self, node, type, data):
         if type == c4d.MSG_DESCRIPTION_COMMAND:
             if data["id"][0].id != c4d.QUICK_STITCH_BUTTON:
@@ -153,17 +159,26 @@ class QuickStitch(c4d.plugins.ObjectData):
         return self.null
 
     def CopyTo(self, dest, snode, dnode, flags, trn):
-        # print "=====CopyTo()====="
+        print "=====CopyTo()====="
+        print "dest.spline: ", dest.spline
+        print "dest.obj   : ", dest.obj
+        print "dest.null  : ", dest.null
+        if self.spline:
+            dest.set_spline(self.spline)
+            # dspline = self.spline.GetClone()
+            # dspline.InsertUnder(dnode)
+            # dest.Message(dnode, c4d.MSG_DESCRIPTION_COMMAND, None)
+        
         # print "self :", self
         # print "dest :", dest
         # print "snode:", snode
         # print "dnode:", dnode
         # print "flags:", flags
         # print "trn  :", trn
-        # if self.obj:
-        #     dest.obj = self.obj.GetClone()
         # if self.spline:
-            # dest.spline = self.spline.GetClone()
+            # dest.spline = self.spline
+            # dest.cloner[c4d.MG_OBJECT_LINK] = self.spline
+            # print "copied"
             # self.spline.GetClone().InsertUnder(dest.null)
         return True
 
