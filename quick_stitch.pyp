@@ -1,3 +1,12 @@
+"""
+
+Quick Stitch for C4D
+Copyright (c) 2020 Nishiki
+
+Released under the MIT license
+https://opensource.org/licenses/mit-license.php
+
+"""
 
 import os
 import sys
