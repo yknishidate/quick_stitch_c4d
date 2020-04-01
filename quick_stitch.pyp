@@ -34,9 +34,9 @@ def create_spline_from_splinedata(spData, arc, width, height):
         arc[c4d.ID_BASEOBJECT_REL_ROTATION,c4d.VECTOR_Y] = c4d.utils.DegToRad(90)
         arc[c4d.SPLINEOBJECT_ANGLE] = c4d.utils.DegToRad(15)
         
+
 def create_spline_from_obj(node, obj):
     if (not obj) or (not obj.CheckType(c4d.Opolygon)):
-        # print "obj is None(create_spline)"
         return True
 
     source = obj.GetClone()
@@ -55,6 +55,7 @@ def create_spline_from_obj(node, obj):
 
         spl.InsertUnder(node)
         source.GetDown().Remove()
+
 
 def copy_coordnates(from_obj, to_obj):
     to_obj.SetMg(from_obj.GetMg())
@@ -101,7 +102,6 @@ class QuickStitch(c4d.plugins.ObjectData):
 
     def set_spline(self, spline):
         if not spline.IsAlive():
-            # print "DEAD: spline(set_spline)"
             spline = None
             return
         self.spline = spline.GetClone()
@@ -140,7 +140,6 @@ class QuickStitch(c4d.plugins.ObjectData):
 
         # get spline
         if not op.GetDown():
-            # print "spline is None"
             return None    
         self.spline = op.GetDown()
 
