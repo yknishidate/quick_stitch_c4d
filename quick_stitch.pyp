@@ -34,9 +34,30 @@ def create_spline_from_splinedata(spData, arc, width, height):
         arc[c4d.ID_BASEOBJECT_REL_ROTATION,c4d.VECTOR_Y] = c4d.utils.DegToRad(90)
         arc[c4d.SPLINEOBJECT_ANGLE] = c4d.utils.DegToRad(15)
         
+def create_spline_from_obj(node, obj):
+    
+    # self.obj = op[c4d.QUICK_STITCH_SOURCE]
+    if (not obj) or (not obj.CheckType(c4d.Opolygon)):
+        print "obj is None(create_spline)"
+        return True
+
+    source = obj.GetClone()
+    selected = source.GetEdgeS()
+    count = selected.GetCount()
+    if count < 1:
+        return True
+    if c4d.utils.SendModelingCommand(c4d.MCOMMAND_EDGE_TO_SPLINE, [source]):
+        spl = source.GetDown().GetClone()
+        spl[c4d.SPLINEOBJECT_INTERPOLATION] = 2 # uniform
+        copy_coordnates(obj, spl)
+        spl.InsertUnder(node)
+        source.GetDown().Remove()
+        # self.cloner[c4d.MG_OBJECT_LINK] = self.spline
 
 def copy_coordnates(from_obj, to_obj):
     to_obj.SetMg(from_obj.GetMg())
+
+
 
 class QuickStitch(c4d.plugins.ObjectData):
     def __init__(self, *args):
@@ -70,12 +91,54 @@ class QuickStitch(c4d.plugins.ObjectData):
         spd.SetKnot(2, c4d.Vector(1.0, 0.0, 0.0), 196608, vTangentLeft=c4d.Vector(0.0, 0.5, 0.0), interpol=0)
         op[c4d.QUICK_STITCH_SHAPE] = spd
 
-        self.this = op
+        # # create
+        # # self.obj = None
+        # self.obj = op[c4d.QUICK_STITCH_SOURCE]
+        # self.shape = None
+        self.spline = None
+        # self.spline = c4d.SplineObject(1, c4d.SPLINETYPE_BEZIER)
+        # self.arc = c4d.SplineObject(1, c4d.SPLINETYPE_BEZIER)
+        self.null = c4d.BaseObject(c4d.Onull)
+        # self.sweep = c4d.BaseObject(c4d.Osweep)
+        # self.sweep.SetPhong(True, True, c4d.utils.DegToRad(50))
+        # self.circle = c4d.BaseObject(c4d.Osplinecircle)
+        self.cloner  = c4d.BaseObject(CLONER_OBJECT)
+
+        # # insert
+        # self.arc.InsertUnder(self.sweep)
+        # self.circle.InsertUnder(self.sweep)
+        # self.sweep.InsertUnder(self.cloner)
+        # self.cloner.InsertUnder(self.null)
+
+        return True
+
+    def set_spline(self, spline):
+        if not spline.IsAlive():
+            print "DEAD: spline(set_spline)"
+            spline = None
+            return
+        self.spline = spline.GetClone()
+        self.spline.InsertUnder(self.null)
+        self.cloner[c4d.MG_OBJECT_LINK] = self.spline
+    
+
+    def Message(self, node, type, data):
+        if type == c4d.MSG_DESCRIPTION_COMMAND:
+            if data["id"][0].id != c4d.QUICK_STITCH_BUTTON:
+                return True
+
+            create_spline_from_obj(node, self.obj)
+
+
+        return True        
+
+    def GetVirtualObjects(self, op, hierarchyhelp):
 
         # create
-        self.obj = None
-        self.shape = None
-        self.spline = None
+        # self.obj = None
+        self.obj = op[c4d.QUICK_STITCH_SOURCE]
+        # self.shape = None
+        # self.spline = None
         self.arc = c4d.SplineObject(1, c4d.SPLINETYPE_BEZIER)
         self.null = c4d.BaseObject(c4d.Onull)
         self.sweep = c4d.BaseObject(c4d.Osweep)
@@ -89,42 +152,12 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.sweep.InsertUnder(self.cloner)
         self.cloner.InsertUnder(self.null)
 
-        return True
-
-    def set_spline(self, spline):
-        self.spline = spline.GetClone()
-        self.spline.InsertUnder(self.null)
-        self.cloner[c4d.MG_OBJECT_LINK] = self.spline
-
-    def Message(self, node, type, data):
-        if type == c4d.MSG_DESCRIPTION_COMMAND:
-            if data["id"][0].id != c4d.QUICK_STITCH_BUTTON:
-                return True
-
-            if (not self.obj) or (not self.obj.CheckType(c4d.Opolygon)):
-                print "obj is None"
-                return True
-
-            if self.spline is not None:
-                self.spline.Remove()
-
-            source = self.obj.GetClone()
-            selected = source.GetEdgeS()
-            count = selected.GetCount()
-            if count < 1:
-                return True
-            if c4d.utils.SendModelingCommand(c4d.MCOMMAND_EDGE_TO_SPLINE, [source]):
-                self.spline = source.GetDown().GetClone()
-                self.spline[c4d.SPLINEOBJECT_INTERPOLATION] = 2 # uniform
-                copy_coordnates(self.obj, self.spline)
-                self.spline.InsertUnder(self.null)
-                source.GetDown().Remove()
-                self.cloner[c4d.MG_OBJECT_LINK] = self.spline
-
-        return True        
-
-    def GetVirtualObjects(self, op, hierarchyhelp):
+        
         self.obj = op[c4d.QUICK_STITCH_SOURCE]
+        if not op.GetDown():
+            print "spline is None"
+            return None    
+        self.spline = op.GetDown()
 
         # property
         count = op[c4d.QUICK_STITCH_COUNT]
@@ -152,10 +185,13 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.cloner[c4d.ID_MG_TRANSFORM_ROTATE,c4d.VECTOR_X] = rotation_h
         self.cloner[c4d.ID_MG_TRANSFORM_ROTATE,c4d.VECTOR_Y] = rotation_p
         self.cloner[c4d.ID_MG_TRANSFORM_ROTATE,c4d.VECTOR_Z] = rotation_b
+        self.cloner[c4d.MG_OBJECT_LINK] = self.spline
 
         return self.null
 
     def CopyTo(self, dest, snode, dnode, flags, trn):
+        if snode.GetDown():
+            self.spline = snode.GetDown()
         if self.spline:
             dest.set_spline(self.spline)
         return True
