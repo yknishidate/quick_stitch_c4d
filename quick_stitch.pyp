@@ -36,7 +36,7 @@ def create_spline_from_splinedata(spData, arc, width, height):
         
 def create_spline_from_obj(node, obj):
     if (not obj) or (not obj.CheckType(c4d.Opolygon)):
-        print "obj is None(create_spline)"
+        # print "obj is None(create_spline)"
         return True
 
     source = obj.GetClone()
@@ -48,6 +48,11 @@ def create_spline_from_obj(node, obj):
         spl = source.GetDown().GetClone()
         spl[c4d.SPLINEOBJECT_INTERPOLATION] = 2 # uniform
         copy_coordnates(obj, spl)
+
+        child = node.GetDown()
+        if child and child.CheckType(c4d.Ospline):
+            child.Remove()
+
         spl.InsertUnder(node)
         source.GetDown().Remove()
 
@@ -96,7 +101,7 @@ class QuickStitch(c4d.plugins.ObjectData):
 
     def set_spline(self, spline):
         if not spline.IsAlive():
-            print "DEAD: spline(set_spline)"
+            # print "DEAD: spline(set_spline)"
             spline = None
             return
         self.spline = spline.GetClone()
@@ -110,12 +115,11 @@ class QuickStitch(c4d.plugins.ObjectData):
                 return True
 
             create_spline_from_obj(node, self.obj)
-
+            node.SetDirty(c4d.DIRTYFLAGS_DATA)
 
         return True        
 
     def GetVirtualObjects(self, op, hierarchyhelp):
-
         # create
         self.obj = op[c4d.QUICK_STITCH_SOURCE]
         self.arc = c4d.SplineObject(1, c4d.SPLINETYPE_BEZIER)
@@ -136,7 +140,7 @@ class QuickStitch(c4d.plugins.ObjectData):
 
         # get spline
         if not op.GetDown():
-            print "spline is None"
+            # print "spline is None"
             return None    
         self.spline = op.GetDown()
 
