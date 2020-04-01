@@ -35,8 +35,6 @@ def create_spline_from_splinedata(spData, arc, width, height):
         arc[c4d.SPLINEOBJECT_ANGLE] = c4d.utils.DegToRad(15)
         
 def create_spline_from_obj(node, obj):
-    
-    # self.obj = op[c4d.QUICK_STITCH_SOURCE]
     if (not obj) or (not obj.CheckType(c4d.Opolygon)):
         print "obj is None(create_spline)"
         return True
@@ -52,7 +50,6 @@ def create_spline_from_obj(node, obj):
         copy_coordnates(obj, spl)
         spl.InsertUnder(node)
         source.GetDown().Remove()
-        # self.cloner[c4d.MG_OBJECT_LINK] = self.spline
 
 def copy_coordnates(from_obj, to_obj):
     to_obj.SetMg(from_obj.GetMg())
@@ -64,7 +61,6 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.SetOptimizeCache(True)
 
     def Init(self, op):
-        # print "Init()"
         self.InitAttr(op, int,   c4d.QUICK_STITCH_COUNT)
         self.InitAttr(op, float, c4d.QUICK_STITCH_WIDTH)
         self.InitAttr(op, float, c4d.QUICK_STITCH_HEIGHT)
@@ -92,23 +88,9 @@ class QuickStitch(c4d.plugins.ObjectData):
         op[c4d.QUICK_STITCH_SHAPE] = spd
 
         # # create
-        # # self.obj = None
-        # self.obj = op[c4d.QUICK_STITCH_SOURCE]
-        # self.shape = None
         self.spline = None
-        # self.spline = c4d.SplineObject(1, c4d.SPLINETYPE_BEZIER)
-        # self.arc = c4d.SplineObject(1, c4d.SPLINETYPE_BEZIER)
         self.null = c4d.BaseObject(c4d.Onull)
-        # self.sweep = c4d.BaseObject(c4d.Osweep)
-        # self.sweep.SetPhong(True, True, c4d.utils.DegToRad(50))
-        # self.circle = c4d.BaseObject(c4d.Osplinecircle)
         self.cloner  = c4d.BaseObject(CLONER_OBJECT)
-
-        # # insert
-        # self.arc.InsertUnder(self.sweep)
-        # self.circle.InsertUnder(self.sweep)
-        # self.sweep.InsertUnder(self.cloner)
-        # self.cloner.InsertUnder(self.null)
 
         return True
 
@@ -135,10 +117,7 @@ class QuickStitch(c4d.plugins.ObjectData):
     def GetVirtualObjects(self, op, hierarchyhelp):
 
         # create
-        # self.obj = None
         self.obj = op[c4d.QUICK_STITCH_SOURCE]
-        # self.shape = None
-        # self.spline = None
         self.arc = c4d.SplineObject(1, c4d.SPLINETYPE_BEZIER)
         self.null = c4d.BaseObject(c4d.Onull)
         self.sweep = c4d.BaseObject(c4d.Osweep)
@@ -152,8 +131,10 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.sweep.InsertUnder(self.cloner)
         self.cloner.InsertUnder(self.null)
 
-        
+        # get obj
         self.obj = op[c4d.QUICK_STITCH_SOURCE]
+
+        # get spline
         if not op.GetDown():
             print "spline is None"
             return None    
@@ -177,7 +158,7 @@ class QuickStitch(c4d.plugins.ObjectData):
         self.shape = op[c4d.QUICK_STITCH_SHAPE]
         create_spline_from_splinedata(self.shape, self.arc, width, height)
 
-        # cloner
+        # cloner setting
         self.cloner[c4d.ID_MG_MOTIONGENERATOR_MODE] = 0              # object
         self.cloner[c4d.MG_SPLINE_MODE] = 0                          # count
         self.cloner[c4d.MG_SPLINE_COUNT] = count
@@ -198,20 +179,16 @@ class QuickStitch(c4d.plugins.ObjectData):
 
 
 if __name__ == "__main__":
-    # Retrieves the icon path
     directory, _ = os.path.split(__file__)
     fn = os.path.join(directory, "res", "qiuckstitch.tif")
 
-    # Creates a BaseBitmap
     bmp = c4d.bitmaps.BaseBitmap()
     if bmp is None:
         raise MemoryError("Failed to create a BaseBitmap.")
 
-    # Init the BaseBitmap with the icon
     if bmp.InitWith(fn)[0] != c4d.IMAGERESULT_OK:
         raise MemoryError("Failed to initialize the BaseBitmap.")
 
-    # Registers the object plugin
     c4d.plugins.RegisterObjectPlugin(id=PLUGIN_ID,
                                  str="QuickStitch",
                                  g=QuickStitch,
